@@ -1,83 +1,102 @@
-import { useState } from 'react'
+import { useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import apiKey from "./config";
+
 import Nav from "./components/Nav";
 import Search from "./components/Search";
-import './App.css'
-import { Routes, Route ,Navigate } from 'react-router-dom';
-import PhotoList from './components/PhotoList';
+import Gallery from "./components/Gallery";
 
-const fetchData = async (query) => {
-  setLoading(true);
-
-  try {
-    const response = await fetch(
-      `https://pixabay.com/api/?key=${apiKey}&q=${query}&image_type=photo`
-    );
-
-    const data = await response.json();
-
-    setPhotos(data.hits);
-  } catch (error) {
-    console.log(error);
-  }
-
-  setLoading(false);
-};
-
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
-const [photos, setPhotos] = useState([]);
-const [loading, setLoading] = useState(false);
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async (query) => {
+    setLoading(true);
+
+    try {
+  const response = await fetch(
+  `https://pixabay.com/api/?key=${apiKey}&q=${query}&image_type=photo`
+);
+
+      const data = await response.json();
+
+      setPhotos(data.hits);
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData("cats");
+  }, []);
+
   return (
-    <Routes>
+    <>
+      <Search fetchData={fetchData} />
 
-  <Route
-    path="/"
-    element={<Navigate to="/cats" />}
-  />
+      <Nav />
 
-  <Route
-    path="/cats"
-    element={
-      <PhotoList
-        photos={photos}
-        title="Cats"
-      />
-    }
-  />
+      <Routes>
+        <Route
+path="/"
+element={<Navigate to="/cats" />}
+/>
+     <Route
+  path="/cats"
+  element={
+    <Gallery
+      photos={photos}
+      fetchData={fetchData}
+      loading={loading}
+    />
+  }
+/>
 
-  <Route
-    path="/dogs"
-    element={
-      <PhotoList
-        photos={photos}
-        title="Dogs"
-      />
-    }
-  />
+<Route
+  path="/dogs"
+  element={
+    <Gallery
+      photos={photos}
+      fetchData={fetchData}
+      loading={loading}
+    />
+  }
+/>
 
-  <Route
-    path="/computers"
-    element={
-      <PhotoList
-        photos={photos}
-        title="Computers"
-      />
-    }
-  />
+<Route
+  path="/computers"
+  element={
+    <Gallery
+      photos={photos}
+      fetchData={fetchData}
+      loading={loading}
+    />
+  }
+/>
 
-  <Route
-    path="/search/:query"
-    element={
-      <PhotoList
-        photos={photos}
-        title="Results"
-      />
-    }
-  />
+<Route
+  path="/search/:query"
+  element={
+    <Gallery
+      photos={photos}
+      fetchData={fetchData}
+      loading={loading}
+    />
+  }
+/>
 
-</Routes>
-  )
+<Route
+  path="*"
+  element={<h2>Page Not Found</h2>}
+/>
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;

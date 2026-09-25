@@ -1,7 +1,7 @@
 const Photo = ({ photo }) => {
   return (
     <li>
-      {photo.webformatURL}
+      <img src={photo.webformatURL}/>
     </li>
   );
 };
